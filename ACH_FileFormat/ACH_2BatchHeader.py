@@ -81,30 +81,3 @@ class ACH_BatchHeader:
             "Batch Number"              : self.batchNumber
         }
         return record.generate(values)
-    
-# Example usage
-if __name__ == "__main__":
-    # Define example data
-    transactionType                 = "Credit"  # Mixed debits/credits
-    companyName                     = "WIS/WEM LLC" #Company Name
-    companyId                       = "1522206279" #COMPANY ID
-    standardEntryClassCode          = "PPD"
-    entryDescription                = "VENDOR"
-    effectiveTransactionDate        = "      " #datetime.now().strftime('%y%m%d')  #Effeective transaction date
-    originatingBankRoutningNumber   = "24090924" #COMPANY BANK ROUTING NUMBER
-    batchNumber                     = "1"
-
-    # Create BatchHeader object
-    batch_header = ACH_BatchHeader(
-        transactionType                 = transactionType,
-        companyName                     = companyName,
-        companyId                       = companyId,
-        standardEntryClassCode          = standardEntryClassCode,
-        entryDescription                = entryDescription,
-        effectiveTransactionDate        = effectiveTransactionDate,
-        originatingBankRoutningNumber   = originatingBankRoutningNumber,
-        batchNumber                     = batchNumber
-    )
-
-    # Generate and print the Batch Header record
-    print(batch_header.generate())

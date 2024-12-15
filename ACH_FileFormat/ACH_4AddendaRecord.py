@@ -25,20 +25,3 @@ class ACH_AddendaRecord:
             f"{self.record_type_code}{self.addenda_type_code}{self.payment_related_info}"
             f"{self.addenda_sequence_number}{self.entry_detail_sequence_number}"
         )
-
-# Example Usage
-if __name__ == "__main__":
-    # Example data
-    paymentRelatedInfo          = "Invoice 12345 Payment"
-    addendaSequenceNumber       = 1
-    entryDetailSequenceNumber   = 1234567
-
-    # Create AddendaRecord object
-    addenda_record = ACH_AddendaRecord(
-        paymentRelatedInfo          = paymentRelatedInfo,
-        addendaSequenceNumber       = addendaSequenceNumber,
-        entryDetailSequenceNumber   = entryDetailSequenceNumber
-    )
-
-    # Generate and print the Addenda Record
-    print(addenda_record.generate())

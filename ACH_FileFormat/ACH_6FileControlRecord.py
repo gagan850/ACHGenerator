@@ -55,15 +55,3 @@ class ACH_FileControlRecord:
             "Total Credit Entry Dollar Amount"  : self.totalCreditAmount,
         }
         return record.generate(values)
-
-# Example Usage
-if __name__ == "__main__":
-    file_control = ACH_FileControlRecord(
-        batchCount              = 2,            # Total number of batches
-        blockCount              = 5,            # Total number of 10-record blocks
-        entryAddendaCount       = 10,    # Total number of entry/addenda records
-        entryHash               = 987654321,     # Hash total of routing numbers
-        totalDebitAmount        = 15000,  # Total debit amount ($150.00)
-        totalCreditAmount       = 10000  # Total credit amount ($100.00)
-    )
-    print(file_control.generate())

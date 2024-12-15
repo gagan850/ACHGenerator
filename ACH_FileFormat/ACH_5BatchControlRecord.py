@@ -61,16 +61,3 @@ class ACH_BatchControlRecord:
             "Batch Number"                      : self.batchNumber
         }
         return record.generate(values)
-
-# Example Usage
-if __name__ == "__main__":
-    batch_control   = ACH_BatchControlRecord(
-        entryAddendaCount               = 5,  # Total of 5 entries/addenda in the batch
-        entryHash                       = 123456789,  # Hash total of routing numbers
-        totalDebitAmount                = 10000,  # Total debit amount in cents ($100.00)
-        totalCreditAmount               = 5000,  # Total credit amount in cents ($50.00)
-        companyId                       = "1522206279",  # Company ID
-        originatingBankRoutingNumber    = "06100010",  # Originating DFI Routing Number
-        batchNumber                     = 1  # Batch number
-    )
-    print(batch_control.generate())

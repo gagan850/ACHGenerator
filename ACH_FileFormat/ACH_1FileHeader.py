@@ -68,23 +68,3 @@ class ACH_FileHeader:
             "Reference Code"            : self.reference
         }
         return record.generate(values)
-
-
-# Example Usage
-if __name__ == "__main__":
-    # Example inputs
-    immediateOrigin                     = "Wellesley Inform. Serv."  # WISINC COMPANY NAME
-    immediateOriginRoutingNumber        = "522206279"                # WISINC COMPANY ID       
-    immediateDestination                = "SunTrust Bank Inc."       # TRUIST BANK NAME
-    immediateDestinationRoutingNumber   = "06100010"                # TRUIST BANK ROUTING NUMBER
-
-    # Create an ACHFileHeader object
-    file_header = ACH_FileHeader(
-                immediateOrigin                     = immediateOrigin,
-                immediateDestination                = immediateDestination,
-                immediateOriginRoutingNumber        = immediateOriginRoutingNumber,
-                immediateDestinationRoutingNumber   = immediateDestinationRoutingNumber
-    )
-
-    # Generate and print the file header
-    print(file_header.generate())

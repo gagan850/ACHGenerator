@@ -78,30 +78,3 @@ class ACH_EntryDetail:
             "Entry Number"              : self.entryNumber
         }
         return record.generate(values)
-
-# Example usage
-if __name__ == "__main__":
-    # Define example data
-    transactionType                 = "Credit"              # Credit
-    receivingBankRoutingNumber      = "12345678"            # Receiving bank routing number
-    receivingBankAccountNumber      = "987654327810"        # Receiver's account number
-    amount                          = "35.21"               # Transaction amount
-    transactionIdentifier           = "943202528"           # Identification number
-    receiverName                    = "OUTSELL, INC"        # Receiver's name
-    originatingBankRoutningNumber   = "24090924"            # COMPANY BANK ROUTING NUMBER
-    entryNumber                     = "281073550000001"     # Trace number (unique)
-
-    # Create EntryDetail object
-    entry_detail = ACH_EntryDetail(
-        transactionType                 = transactionType,
-        receivingBankRoutingNumber      = receivingBankRoutingNumber,
-        receivingBankAccountNumber      = receivingBankAccountNumber,
-        amount                          = amount,
-        transactionIdentifier           = transactionIdentifier,
-        receiverName                    = receiverName,
-        originatingBankRoutningNumber   = originatingBankRoutningNumber,
-        entryNumber                     = entryNumber
-    )
-
-    # Generate and print the Entry Detail record
-    print(entry_detail.generate())
