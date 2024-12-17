@@ -142,17 +142,18 @@ class ACHGeneratorTab:
             self.generateAchButton.setVisible(True)
 
     def csv_template_download(self):
+        accountingSystem = UPDATED_COMPANY_DETAILS['Accounting System']
         """Handle the CSV template download process."""
         # Open a file dialog for the user to select the save location
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         file_path, _ = QFileDialog.getSaveFileName(
-            None, "Save CSV Template", "ACH_Template.csv", "CSV Files (*.csv)", options=options
+            None, "Save CSV Template", "ACH_"+accountingSystem+"_Template.csv", "CSV Files (*.csv)", options=options
         )
 
         if file_path:
             # Call the backend function to generate the CSV template
-            result = download_template(file_path)
+            result = download_template(accountingSystem, file_path)
 
             if "Error" in result:
                 # Show error message if there's an issue
@@ -164,6 +165,8 @@ class ACHGeneratorTab:
             QMessageBox.warning(None, "Cancelled", "No file selected. Operation cancelled.")
     
     def csv_upload(self):
+        accountingSystem = UPDATED_COMPANY_DETAILS['Accounting System']
+
         self.generateAchButton.setVisible(False)
         """Allow user to upload only CSV files."""
         options = QFileDialog.Options()
@@ -179,7 +182,7 @@ class ACHGeneratorTab:
             try:
                 # Read and validate the CSV file
                 self.csv_file_path = file_path
-                issues = validate_csv(file_path)
+                issues = validate_csv(accountingSystem, file_path)
 
                 if issues:
                     # Display issues to the user
@@ -190,7 +193,7 @@ class ACHGeneratorTab:
                         f"The following issues were found in the CSV file:\n\n{issue_message}"
                     )
                 else:
-                    transactional_data = read_csv_data(self.csv_file_path)
+                    transactional_data = read_csv_data(accountingSystem, self.csv_file_path)
                     if not transactional_data:  # Empty list or dictionary
                         QMessageBox.warning(self.parent, "No Records", "The uploaded CSV file contains no records.")
                     else:
@@ -205,10 +208,12 @@ class ACHGeneratorTab:
             
     def generate_ach(self):
         """Generate the ACH payload based on the selected data source."""
+        accountingSystem = UPDATED_COMPANY_DETAILS['Accounting System']
+
         try:
             if self.csv_radio.isChecked() and self.csv_file_path:
                 # Use the already uploaded CSV file
-                transactional_data = read_csv_data(self.csv_file_path)
+                transactional_data = read_csv_data(accountingSystem, self.csv_file_path)
                 if not transactional_data:  # Empty list or dictionary
                     QMessageBox.warning(self.parent, "No Records", "The uploaded CSV file contains no records.")
                 print('transactional_data: ' + json.dumps(transactional_data, indent=4))

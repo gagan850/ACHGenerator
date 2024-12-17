@@ -6,8 +6,6 @@ from PyQt5.QtWidgets import QVBoxLayout, QGridLayout, QLineEdit, QLabel, QHBoxLa
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from ACH_Constant.Constant import GENERIC_CSV_FORMAT, GENERIC_CSV_FORMAT_MANDATORY, XERO_CSV_FORMAT, XERO_CSV_FORMAT_MANDATORY, STANDARD_ENTRY_CLASS_MAPPING
 
-ACCOUNTING_SYSTEM = 'XERO'
-
 def validate_xero_csv(file_path):
     """
     Validate a CSV file specific to XERO accounting system.
@@ -95,7 +93,7 @@ def validate_generic_csv(file_path):
     return issues
 
 
-def validate_csv(file_path):
+def validate_csv(accountingSystem, file_path):
     """
     Wrapper function to validate CSV files based on the accounting system.
 
@@ -105,16 +103,16 @@ def validate_csv(file_path):
     Returns:
         list: A list of validation error messages.
     """
-    if ACCOUNTING_SYSTEM == 'XERO':
+    if accountingSystem == 'Xero':
         return validate_xero_csv(file_path)
     else:
         return validate_generic_csv(file_path)
 
       
-def download_template(file_path):
+def download_template(accountingSystem, file_path):
     try:
         # Define the columns for the CSV template
-        columns = XERO_CSV_FORMAT if ACCOUNTING_SYSTEM == 'XERO' else GENERIC_CSV_FORMAT
+        columns = XERO_CSV_FORMAT if accountingSystem == 'Xero' else GENERIC_CSV_FORMAT
         
         # Write the CSV template
         with open(file_path, mode='w', newline='', encoding='utf-8') as file:
@@ -163,7 +161,7 @@ def read_generic_csv(file_path):
     return csv_data
 
 
-def read_csv_data(file_path):
+def read_csv_data(accountingSystem, file_path):
     """
     Wrapper to read CSV data based on the accounting system.
 
@@ -173,7 +171,7 @@ def read_csv_data(file_path):
     Returns:
         list: A list of dictionaries representing each row.
     """
-    if ACCOUNTING_SYSTEM == 'XERO':
+    if accountingSystem == 'Xero':
         return read_xero_csv(file_path)
     else:
         return read_generic_csv(file_path)
