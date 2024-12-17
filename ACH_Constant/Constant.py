@@ -38,6 +38,8 @@ STANDARD_ENTRY_CLASS_MAPPING = {
     "Corporate Credit or Debit Entries": "CCD"
 }
 
+ACCOUNTING_SYSTEM = ['Default','Xero']
+
 TRANSACTION_DETAILS = {
     "Receiver Name": "",
     "Receiver Account Number": "",
@@ -56,6 +58,7 @@ DEFAULT_COMPANY_DETAILS = {
     "Company Financial Services": "Dummy Financial Services",
     "Company Routing Number": "000000000",
     "Bank Name": "Dummy Bank",
-    "Bank Routing Number": "000000000"
+    "Bank Routing Number": "000000000",
+    "Accounting System":"Xero"
 }
-UPDATED_COMPANY_DETAILS = {'Company Name': 'Dummy Company', 'Company Id': '0000000000', 'Company Financial Services': 'Dummy Financial Service', 'Company Routing Number': '000000000', 'Bank Name': 'Dummy Bank', 'Bank Routing Number': '000000000'}
+UPDATED_COMPANY_DETAILS = {'Company Name': 'Dummy Company', 'Company Id': '0000000000', 'Company Financial Services': 'Dummy Financial Service', 'Company Routing Number': '000000000', 'Bank Name': 'Dummy Bank', 'Bank Routing Number': '000000000', 'Accounting System': 'Xero'}

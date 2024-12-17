@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QVBoxLayout, QGridLayout, QLineEdit, QLabel, QHBoxLa
 from PyQt5.QtGui import QIntValidator, QDoubleValidator
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from ACH_Util.Util import saveCompanyDetails, showPopup, updateCompanyDetails
-from ACH_Constant.Constant import DEFAULT_COMPANY_DETAILS, UPDATED_COMPANY_DETAILS
+from ACH_Constant.Constant import DEFAULT_COMPANY_DETAILS, UPDATED_COMPANY_DETAILS, ACCOUNTING_SYSTEM
 from ACH_UI.Styles import error_buttonStyle, success_buttonStyle, normal_buttonStyle
 
 class CompanyDetailsTab:
@@ -22,37 +22,45 @@ class CompanyDetailsTab:
         
         row = 0  # Initialize row outside of the loop to track the number of rows
 
-        for label_text, default_value in self.updatedCompanyDetails.items():
+        for label_text, default_value in self.updatedCompanyDetails.items(): 
             label = QLabel(label_text)
-            line_edit = QLineEdit(default_value)
-            line_edit.setReadOnly(True)
-            self.fields[label_text] = line_edit
-            grid_layout.addWidget(label, row, 0)
-            grid_layout.addWidget(line_edit, row, 1)
-            # Apply validation based on the field
-            if label_text == "Company Name":
-                line_edit.setMaxLength(16) 
-            elif label_text == "Company Id":
-                line_edit.setMaxLength(10)  
-            elif label_text == "Company Financial Services":
-                line_edit.setMaxLength(23) 
-            elif label_text == "Company Routing Number":
-                line_edit.setValidator(QIntValidator(0, 999999999, self.parent))
-                line_edit.setMaxLength(9) 
-            elif label_text == "Bank Name":
-                line_edit.setMaxLength(23)  
-            elif label_text == "Bank Routing Number":
-                line_edit.setValidator(QIntValidator(0, 999999999, self.parent))
-                line_edit.setMaxLength(9) 
+
+            if label_text == "Accounting System":
+                accountingSystem = QLabel("Accounting System")
+                accountingSystemValues = QComboBox()
+                for item in ACCOUNTING_SYSTEM:
+                    accountingSystemValues.addItem(item)  # Add items to the combo box
+                accountingSystemValues.setCurrentText(default_value)
+                self.fields[label_text] = accountingSystemValues
+
+                accountingSystemValues.setDisabled(True)
+                grid_layout.addWidget(accountingSystem, row, 0)
+                grid_layout.addWidget(accountingSystemValues, row, 1)
+                
+            else:
+                line_edit = QLineEdit(default_value)
+                line_edit.setReadOnly(True)
+                self.fields[label_text] = line_edit
+                grid_layout.addWidget(label, row, 0)
+                grid_layout.addWidget(line_edit, row, 1)
+                # Apply validation based on the field
+                if label_text == "Company Name":
+                    line_edit.setMaxLength(16) 
+                elif label_text == "Company Id":
+                    line_edit.setMaxLength(10)  
+                elif label_text == "Company Financial Services":
+                    line_edit.setMaxLength(23) 
+                elif label_text == "Company Routing Number":
+                    line_edit.setValidator(QIntValidator(0, 999999999, self.parent))
+                    line_edit.setMaxLength(9) 
+                elif label_text == "Bank Name":
+                    line_edit.setMaxLength(23)  
+                elif label_text == "Bank Routing Number":
+                    line_edit.setValidator(QIntValidator(0, 999999999, self.parent))
+                    line_edit.setMaxLength(9) 
             row += 1;                 
         
-        accountingSystem = QLabel("Accounting System")
-        accountingSystemValues = QComboBox()
-        accountingSystemValues.addItem("Xero")
-        accountingSystemValues.addItem("QuickBooks")
-        accountingSystemValues.setDisabled(True)
-        grid_layout.addWidget(accountingSystem, row, 0)
-        grid_layout.addWidget(accountingSystemValues, row, 1)
+
         # Add buttons
         self.edit_button = QPushButton("Edit")
         self.edit_button.setStyleSheet(error_buttonStyle)
@@ -83,8 +91,12 @@ class CompanyDetailsTab:
     def toggle_edit_mode(self):
         """Toggle between editable and read-only modes for the fields."""
         is_editable = self.edit_button.isVisible()
+        
         for field in self.fields.values():
-            field.setReadOnly(not is_editable)
+            if isinstance(field, QLineEdit):
+                field.setReadOnly(not is_editable)  # QLineEdit: use setReadOnly
+            elif isinstance(field, QComboBox):
+                field.setEnabled(is_editable)  # QComboBox: use setEnabled (True for editable, False for read-only)
 
         self.edit_button.setVisible(not is_editable)
         self.save_button.setVisible(is_editable)
@@ -92,7 +104,10 @@ class CompanyDetailsTab:
     def save_changes(self):
         """Save changes to UPDATED_COMPANY_DETAILS and toggle back to read-only mode."""
         for label, field in self.fields.items():
-            self.updatedCompanyDetails[label] = field.text()
+            if isinstance(field, QLineEdit):
+                self.updatedCompanyDetails[label] = field.text()  # Get text from QLineEdit
+            elif isinstance(field, QComboBox):
+                self.updatedCompanyDetails[label] = field.currentText()  # Get selected text from QComboBox
 
         updateCompanyDetails(self.updatedCompanyDetails)
 
@@ -104,7 +119,10 @@ class CompanyDetailsTab:
         for label, field in self.fields.items():
             default_value = DEFAULT_COMPANY_DETAILS.get(label)
             if default_value is not None:
-                field.setText(default_value)
+                if isinstance(field, QLineEdit):
+                    field.setText(default_value)  # Set text for QLineEdit
+                elif isinstance(field, QComboBox):
+                    field.setCurrentText(default_value)  # Set text for QComboBox
 
         showPopup("Company details have been reset to default values.")
         self.toggle_edit_mode()
