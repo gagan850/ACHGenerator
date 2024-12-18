@@ -61,6 +61,36 @@ class ACH_EntryDetail:
         amount_in_cents = int(formatted_amount * 100)
         return amount_in_cents
     
+    def calculateCheckDigit(self, routingNumber):
+        """
+        Calculate the check digit for the routing number or return the 9th digit if it already exists.
+        :param routingNumber: The routing number (8 or 9 digits)
+        :return: The check digit (either provided or calculated)
+        """
+        if len(routingNumber) == 9:
+            # If the routing number is 9 digits, return the 9th digit as the check digit
+            return int(routingNumber[-1])
+        elif len(routingNumber) == 8:
+            # If the routing number is 8 digits, calculate the check digit
+            # Weight factors for the routing number digits
+            weights = [3, 7, 1] * 3  # Repeat the sequence [3, 7, 1] for all digits
+            
+            # Append a placeholder '0' for the check digit during the calculation
+            routingNumber = routingNumber + "0"
+
+            # Calculate the sum of the products
+            sum_products = sum(int(digit) * weight for digit, weight in zip(routingNumber, weights))
+
+            # Find the remainder when divided by 10
+            remainder = sum_products % 10
+
+            # Calculate the check digit
+            check_digit = (10 - remainder) % 10
+            return check_digit
+        else:
+            # If the routing number is not 8 or 9 digits, raise an error
+            raise ValueError("Routing number must be 8 or 9 digits.")
+
     def generate(self):
         """
         Generate the formatted Entry Detail record.
@@ -69,7 +99,7 @@ class ACH_EntryDetail:
         values = {
             "Transaction Code"          : self.getTransaction(self.transactionType),
             "Receiving DFI"             : self.receivingBankRoutingNumber,
-            "Check Digit"               : "1",
+            "Check Digit"               : self.calculateCheckDigit(self.receivingBankRoutingNumber),
             "Receiver Account Number"   : self.receivingBankAccountNumber,
             "Amount"                    : self.formatAmount(self.amount),
             "Transaction Identifier"    : self.transactionIdentifier,
