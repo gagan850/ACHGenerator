@@ -40,7 +40,7 @@ def preparePayload(companyDetail, transactionalDetail):
             "ImmediateDestination": companyDetail.get("Bank Name", ""),
             "ImmediateOriginRoutingNumber": companyDetail.get("Company Routing Number", ""),
             "ImmediateDestinationRoutingNumber": companyDetail.get("Bank Routing Number", ""),
-            "TransactionType": transaction.get("Transaction Type", "Debit"),   
+            "TransactionType": transaction.get("Transaction Type", "Credit"),   
             "CompanyName": companyDetail.get("Company Name", ""),
             "CompanyId": companyDetail.get("Company Id", ""),
             "ReceiverName": transaction.get("Receiver Name", ""),
