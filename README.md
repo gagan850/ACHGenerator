@@ -49,14 +49,7 @@ Receiver details can be entered in the "ACH Generator" tab. Once the transaction
 
 ### 💻 Terminal
 
-If you prefer working from the terminal, the ACH Generator also supports command-line operations. You can generate the ach uwing below command, it will generate the ach at the path /path/to_datetime.txt
-
-```bash
-python3 main.py --csv /path/to/csv
-```
-
-csv format to accept is
-ImmediateOrigin,ImmediateDestination,ImmediateOriginRoutingNumber,ImmediateDestinationRoutingNumber,Reference,TransactionType,CompanyName,CompanyId,StandardEntryClassCode,EntryDescription,ReceivingDFI,ReceivingBankAccountNumber,Amount,TransactionIdentifier,ReceiverName
+If you prefer working from the terminal, the ACH Generator also supports command-line operations.
 
 ---
 
@@ -78,10 +71,17 @@ To install the ACH Generator, follow the steps below:
    python3 main.py
    ```
 2. For Terminal
-   ```bash
-   cd ACH Generator/ACH_Service
-   python3 ACH_Generator.py
-   ```
+
+You can generate the ach using below command, it will generate the ach at the path /path/to/datetime.txt
+
+```bash
+  python3 main.py --csv /path/to/csv
+  ```
+
+It accepts the csv in below format
+```bash
+ImmediateOrigin,ImmediateDestination,ImmediateOriginRoutingNumber,ImmediateDestinationRoutingNumber,Reference,TransactionType,CompanyName,CompanyId,StandardEntryClassCode,EntryDescription,ReceivingDFI,ReceivingBankAccountNumber,Amount,TransactionIdentifier,ReceiverName
+```
 
 ## 💬 Support
 
