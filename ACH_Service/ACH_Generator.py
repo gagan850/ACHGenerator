@@ -1,6 +1,5 @@
 import csv, os, sys
 from datetime import datetime
-from PyQt5.QtWidgets import QFileDialog, QMessageBox
 
 # Add the parent directory of the current file to the system path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -11,63 +10,9 @@ from ACH_FileFormat.ACH_3EntryDetail import ACH_EntryDetail
 from ACH_FileFormat.ACH_5BatchControlRecord import ACH_BatchControlRecord
 from ACH_FileFormat.ACH_6FileControlRecord import ACH_FileControlRecord
 
-def generateACH(achRequestPayload):
-    """
-    Processes the ACH payload and saves it as a file with a timestamped filename.
-    
-    Args:
-        payload (dict): The ACH payload data.
-    """
-    try:
-        # Generate the filename with a timestamp
-        current_datetime = datetime.now()
-        formatted_datetime = current_datetime.strftime("%Y%m%d_%H%M%S")
-        default_filename = f"{formatted_datetime}.txt"
-        
-        # Open a file dialog for the user to select the save location
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog  # Optional, based on OS behavior
-        file_path, _ = QFileDialog.getSaveFileName(
-            None, 
-            "Save ACH File", 
-            default_filename, 
-            "ACH Files (*.txt);;All Files (*)", 
-            options=options
-        )
-
-        achFileGenerator = ACHFileGenerator("", achRequestPayload)
-        achResponsePayload = achFileGenerator.generate()
-
-        # If the user cancels the dialog, file_path will be an empty string
-        if not file_path:
-            QMessageBox.warning(None, "Cancelled", "File save operation was cancelled.")
-            return
-
-        # Write the ACH data to the selected file
-        with open(file_path, 'w') as file:
-            file.write(achResponsePayload)  # Assuming `payload` is the string content of the ACH file
-
-        QMessageBox.information(None, "Success", f"ACH file has been successfully saved to:\n{file_path}")
-
-    except Exception as e:
-        QMessageBox.critical(None, "Error", f"An error occurred while saving the ACH file: {str(e)}")
-
-
 class ACHFileGenerator:
-    def __init__(self, csv_file="", records=[]):
-        if records:
-            self.records = records
-        else:
-            self.csv_file = csv_file
-            self.records = records
-
-        
-    def loadCsvPayload(self):
-        """Load the CSV file and prepare records"""
-        with open(self.csv_file, mode='r', newline='') as file:
-            reader = csv.DictReader(file, delimiter=';')
-            for row in reader:
-                self.records.append(row)
+    def __init__(self, records=[]):
+        self.records = records
                 
     def calculate_entry_hash(self):
         """Calculate the Entry Hash by summing the first 8 digits of all routing numbers"""
@@ -119,7 +64,7 @@ class ACHFileGenerator:
             standardEntryClassCode=self.records[0]['StandardEntryClassCode'],
             entryDescription=self.records[0]['EntryDescription'],
             effectiveTransactionDate="",
-            originatingBankRoutningNumber=self.records[0]['OriginatingBankRoutningNumber'],
+            originatingBankRoutningNumber=self.records[0]['ImmediateDestinationRoutingNumber'],
             batchNumber="1"
 
         )
@@ -135,7 +80,7 @@ class ACHFileGenerator:
                 amount=record['Amount'],
                 transactionIdentifier=record['TransactionIdentifier'],
                 receiverName=record['ReceiverName'],
-                originatingBankRoutningNumber=self.records[0]['OriginatingBankRoutningNumber'],
+                originatingBankRoutningNumber=self.records[0]['ImmediateDestinationRoutingNumber'],
                 entryNumber=entry_number
             )
             entry_details.append(entry_detail.generate())
@@ -152,7 +97,7 @@ class ACHFileGenerator:
             totalDebitAmount=str(total_debit_amount),
             totalCreditAmount=str(total_credit_amount),
             companyId=self.records[0]['CompanyId'],
-            originatingBankRoutingNumber=self.records[0]['OriginatingBankRoutningNumber'],
+            originatingBankRoutingNumber=self.records[0]['ImmediateDestinationRoutingNumber'],
             batchNumber="1"
 
         )
@@ -200,19 +145,3 @@ class ACHFileGenerator:
             lines.extend([padding_line] * lines_to_add)
         
         return '\r\n'.join(lines)  # Rejoin lines with '\r\n'
-        
-    def save(self, ach_payload, output_filename):
-        """Save the generated ACH file to disk"""
-        ach_file_content = self.generate()
-        with open(output_filename, 'w') as file:
-            file.write(ach_payload)
-
-# Example usage
-if __name__ == "__main__":
-    # Initialize the ACHFileGenerator with the path to the CSV
-    achFileGenerator = ACHFileGenerator("ACH_template.csv")
-    achFileGenerator.loadCsvPayload()  # Load the records from the CSV  
-    achResponsePayload = achFileGenerator.generate()
-    # Generate and save the ACH file
-    with open("output_ach_file.ach", 'w') as file:
-        file.write(achResponsePayload)

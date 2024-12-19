@@ -1,4 +1,5 @@
 import os, sys, json
+from datetime import datetime
 from PyQt5.QtWidgets import QVBoxLayout, QGridLayout, QLineEdit, QLabel, QHBoxLayout, QPushButton, QComboBox,QRadioButton,QButtonGroup, QFileDialog, QMessageBox
 from PyQt5.QtGui import QIntValidator, QDoubleValidator
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -8,7 +9,7 @@ from ACH_Constant.Constant import UPDATED_COMPANY_DETAILS
 from ACH_Constant.Constant import TRANSACTION_DETAILS
 from ACH_Service.ACH_CSVHandler import download_template, validate_csv, read_csv_data
 from ACH_Service.ACH_PayloadCreator import preparePayload
-from ACH_Service.ACH_Generator import generateACH
+from ACH_Service.ACH_Generator import ACHFileGenerator
 
 class ACHGeneratorTab:
     def __init__(self, parent):
@@ -218,8 +219,10 @@ class ACHGeneratorTab:
                     QMessageBox.warning(self.parent, "No Records", "The uploaded CSV file contains no records.")
                 print('transactional_data: ' + json.dumps(transactional_data, indent=4))
                 print('company_detail: ' + json.dumps(UPDATED_COMPANY_DETAILS, indent=4))
-                payload = preparePayload(UPDATED_COMPANY_DETAILS, transactional_data)
-                generateACH(payload)
+                achRequestPayload = preparePayload(UPDATED_COMPANY_DETAILS, transactional_data)
+                achFileGenerator = ACHFileGenerator(achRequestPayload)
+                achResponsePayload = achFileGenerator.generate()
+                self.saveAch(achResponsePayload)
                 self.generateAchButton.setVisible(False)
             else:
                 if not self.validate_mandatory_fields():
@@ -239,11 +242,50 @@ class ACHGeneratorTab:
                 print('company_detail: ' + json.dumps(UPDATED_COMPANY_DETAILS, indent=4))
                 self.generateAchButton.setVisible(True)
                 # Handle manual data from form fields
-                payload = preparePayload(UPDATED_COMPANY_DETAILS, fields_json)
-                generateACH(payload)
-
+                achRequestPayload = preparePayload(UPDATED_COMPANY_DETAILS, fields_json)
+                achFileGenerator = ACHFileGenerator(achRequestPayload)
+                achResponsePayload = achFileGenerator.generate()
+                self.saveAch(achResponsePayload)
         except Exception as e:
             QMessageBox.critical(self.parent, "Error", f"An error occurred: {str(e)}")
+
+    def saveAch(self, achResponsePayload):
+        """
+        Saves it as a file with a timestamped filename.
+        
+        Args:
+            payload (dict): The ACH payload data.
+        """
+        try:
+            # Generate the filename with a timestamp
+            current_datetime = datetime.now()
+            formatted_datetime = current_datetime.strftime("%Y%m%d_%H%M%S")
+            default_filename = f"{formatted_datetime}.txt"
+            
+            # Open a file dialog for the user to select the save location
+            options = QFileDialog.Options()
+            options |= QFileDialog.DontUseNativeDialog  # Optional, based on OS behavior
+            file_path, _ = QFileDialog.getSaveFileName(
+                None, 
+                "Save ACH File", 
+                default_filename, 
+                "ACH Files (*.txt);;All Files (*)", 
+                options=options
+            )
+
+            # If the user cancels the dialog, file_path will be an empty string
+            if not file_path:
+                QMessageBox.warning(None, "Cancelled", "File save operation was cancelled.")
+                return
+
+            # Write the ACH data to the selected file
+            with open(file_path, 'w') as file:
+                file.write(achResponsePayload)  # Assuming `payload` is the string content of the ACH file
+
+            QMessageBox.information(None, "Success", f"ACH file has been successfully saved to:\n{file_path}")
+
+        except Exception as e:
+            QMessageBox.critical(None, "Error", f"An error occurred while saving the ACH file: {str(e)}")
 
         
     def reset_fields(self):
