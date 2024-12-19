@@ -1,9 +1,7 @@
-import csv, os, sys
-from datetime import datetime
+import os, sys
 
 # Add the parent directory of the current file to the system path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from ACH_Constant.Constant import GENERIC_CSV_FORMAT, GENERIC_CSV_FORMAT_MANDATORY, XERO_CSV_FORMAT, XERO_CSV_FORMAT_MANDATORY, STANDARD_ENTRY_CLASS_MAPPING
 from ACH_FileFormat.ACH_1FileHeader import ACH_FileHeader
 from ACH_FileFormat.ACH_2BatchHeader import ACH_BatchHeader
 from ACH_FileFormat.ACH_3EntryDetail import ACH_EntryDetail
