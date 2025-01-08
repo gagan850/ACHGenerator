@@ -47,13 +47,13 @@ def preparePayload(companyDetail, transactionalDetail):
             "ReceivingBankAccountNumber": transaction.get("Receiver Account Number", ""),
             "ReceivingDFI": transaction.get("Receiver Routing Number", ""),
             "OriginatingBankRoutningNumber": companyDetail.get("Bank Routing Number", ""),
-            "StandardEntryClassCode": STANDARD_ENTRY_CLASS_MAPPING.get(transaction.get("Standard Entry Class Code"), "PPD"),
+            "StandardEntryClassCode": STANDARD_ENTRY_CLASS_MAPPING.get(transaction.get("Standard Entry Class Code"), "CCD"),
             "EntryDescription": transaction.get("Entry Description", "VENDOR"),
             "Amount": transaction.get("Amount", ""),
             "TransactionIdentifier": transaction.get("Transaction Identifier", ""),
             "EntryNumber": transaction.get("Entry Number", "1"),
             "Reference": transaction.get("Reference", "")
-        }
+        }   
         print('Generated payload: ' + json.dumps(payload, indent=4))
         payloads.append(payload)
 
