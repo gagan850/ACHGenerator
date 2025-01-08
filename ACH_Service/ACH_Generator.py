@@ -117,7 +117,7 @@ class ACHFileGenerator:
         ach_file += file_control.generate()
 
         # Pad lines to ensure the total line count is a multiple of 10
-        ach_file = self.pad_lines_to_multiple_of_10(ach_file)
+        ach_file = self.pad_lines_to_multiple_of_10(ach_file) + '\r\n'
         return ach_file
 
     def pad_lines_to_multiple_of_10(self, ach_file_content):
